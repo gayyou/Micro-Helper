@@ -2,7 +2,6 @@
  * @author Weybn
  * @description 通过代理的方式得到当前浏览器的各项数据。
  */
-
 interface ScreenInfo {
   innerHeight: number;
   innerWidth: number;

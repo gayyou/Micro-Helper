@@ -1,9 +1,40 @@
 import React, {Component} from "react";
 import dragImg from "../../assets/icons/tool.png";
 import "./DragIcon.scss";
-import {screenProxy} from "../../utils/Common";
+import {screenProxy} from "../../utils/screenInfo";
+import {isMobile} from "../../utils/userAgent";
+import {isDef} from "../../utils";
+import {warn} from "../../utils/log";
 
+// 初始化变量
 let isDrag = false;
+let moveEventType = 'mousemove';
+let endEventType = 'mouseup';
+let outEventType = 'mouseleave';
+
+// if mobile
+if (isMobile) {
+  moveEventType = 'touchmove';
+  endEventType = 'touchend';
+  outEventType = 'touchleave';
+}
+
+// get user operation position
+function getEventPosition(event: any) {
+  let pageX, pageY;
+  if (isDef(event.pageX) && isDef(event.pageY)) {
+    ({ pageX, pageY } = event);
+  } else if (isDef(event.touches[0])) {
+    ({ pageX, pageY } = event.touches[0]);
+  } else {
+    warn('Can not get user operation position!');
+  }
+
+  return {
+    pageX,
+    pageY
+  }
+}
 
 export default class DragIcon extends Component {
   get screenInfo() {
@@ -22,8 +53,9 @@ export default class DragIcon extends Component {
   };
 
   componentWillUnmount(): void {
-    document.removeEventListener('mousemove', this.dragMove);
-    document.removeEventListener('mouseleave', this.moveOut);
+    document.removeEventListener(moveEventType, this.dragMove);
+    document.removeEventListener(endEventType, this.dragEnd);
+    document.removeEventListener(outEventType, this.dragEnd);
   }
 
   constructor(props: any) {
@@ -38,17 +70,18 @@ export default class DragIcon extends Component {
         y: 0
       }
     };
-    document.addEventListener('mousemove', this.dragMove);
-    document.addEventListener('mouseleave', this.moveOut);
-    document.addEventListener('mouseup', this.dragEnd);
+    document.addEventListener(moveEventType, this.dragMove);
+    document.addEventListener(endEventType, this.dragEnd);
+    document.addEventListener(outEventType, this.dragEnd);
   }
 
   dragStart = (event: any) => {
-    let { screenX, screenY } = event;
+    let { pageX, pageY } = getEventPosition(event);
+
     this.setState({
       mouseStartPosi: {
-        x: screenX,
-        y: screenY
+        x: pageX,
+        y: pageY
       }
     });
     isDrag = true;
@@ -58,9 +91,10 @@ export default class DragIcon extends Component {
     if (!isDrag) {
       return ;
     }
-    let { screenX, screenY } = event;
-    let resultX = screenX - this.state.mouseStartPosi.x + this.state.iconPosi.x;
-    let resultY = screenY - this.state.mouseStartPosi.y + this.state.iconPosi.y;
+    let { pageX, pageY } = getEventPosition(event);
+
+    let resultX = pageX - this.state.mouseStartPosi.x + this.state.iconPosi.x;
+    let resultY = pageY - this.state.mouseStartPosi.y + this.state.iconPosi.y;
 
     this.setState({
       iconPosi: {
@@ -68,19 +102,14 @@ export default class DragIcon extends Component {
         y: resultY
       },
       mouseStartPosi: {
-        x: screenX,
-        y: screenY
+        x: pageX,
+        y: pageY
       }
     });
     this.adjust();
   };
 
-  dragEnd = (event: any) => {
-    isDrag = false;
-    this.adjust();
-  };
-
-  moveOut = (event: any) => {
+  dragEnd = () => {
     isDrag = false;
     this.adjust();
   };
@@ -115,6 +144,7 @@ export default class DragIcon extends Component {
       <div className="icon-container"
         style={{transform: `translate(${this.state.iconPosi.x}px, ${this.state.iconPosi.y}px)`}}
         onMouseDown={this.dragStart}
+        onTouchStart={this.dragStart}
       >
         <div className="icon-layout"/>
         <img className="icon-image" src={dragImg} alt="设置图标" />

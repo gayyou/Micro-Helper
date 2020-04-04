@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
-import DragIcon from "./components/dragIcon/DragIcon";
+import ContextTest from "./labs/contextTest/ContextTest";
 
 function App() {
   return (
     <div className="App">
-      <DragIcon/>
+      <ContextTest/>
     </div>
   );
 }
