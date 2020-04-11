@@ -110,6 +110,7 @@ export default class DragIcon extends Component {
   };
 
   dragEnd = () => {
+    console.log('拖拽丢失')
     isDrag = false;
     this.adjust();
   };

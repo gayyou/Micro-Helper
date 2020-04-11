@@ -1,0 +1,16 @@
+.micro-helper-layout {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 80vh;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, .7);
+
+  .micro-helper-layout-main {
+    position: relative;
+    width: 100%;
+    flex: 1;
+  }
+}

@@ -1,12 +1,16 @@
 import React from 'react';
 import './App.css';
-import ContextTest from "./labs/contextTest/ContextTest";
+import Layout from "./views/layout/Layout";
+import DragIcon from "./components/dragIcon/DragIcon";
+import MyPureCom from "./labs/pureComponent/MyPureCom";
 
 function App() {
   return (
-    <div className="App">
-      <ContextTest/>
-    </div>
+    <>
+      <DragIcon key="drag-icon"/>
+      <Layout key="layout"/>
+      <MyPureCom/>
+    </>
   );
 }
 
