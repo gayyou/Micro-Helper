@@ -15,7 +15,7 @@ export default class Console extends React.Component {
     setInterval(() => {
       this.setState({
         count: this.state.count + 1
-      })
+      });
     }, 1000)
   }
 

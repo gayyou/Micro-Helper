@@ -11,9 +11,7 @@ export default class LifeCycle extends React.Component {
       count: 0
     }
     setTimeout(() => {
-      this.setState({
-        count: 2
-      })
+      this.setState({});
       setTimeout(() => {
         this.forceUpdate();
       }, 2000);
@@ -26,13 +24,21 @@ export default class LifeCycle extends React.Component {
   }
 
   static getDerivedStateFromProps(newProps, preState) {
-    console.log(newProps);
-    console.log(preState);
+    console.log('我是DerivedState')
+    return null;
+  }
+
+  componentDidUpdate(prevProps: any, prevState: any, snapshot?: any): void {
+    console.log(snapshot)
+  }
+
+  getSnapshotBeforeUpdate(prevProps: any, prevState: any): void {
+    console.log('我是SnapShot')
     return null;
   }
 
   render() {
-    console.log('我是render')
+    console.log('我是render');
     return (
       <div>我是LifeCycle测试{this.state.count}</div>
     );

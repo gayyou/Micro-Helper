@@ -70,6 +70,9 @@ export default class DragIcon extends Component {
         y: 0
       }
     };
+  }
+
+  componentDidMount(): void {
     document.addEventListener(moveEventType, this.dragMove);
     document.addEventListener(endEventType, this.dragEnd);
     document.addEventListener(outEventType, this.dragEnd);
@@ -110,7 +113,6 @@ export default class DragIcon extends Component {
   };
 
   dragEnd = () => {
-    console.log('拖拽丢失')
     isDrag = false;
     this.adjust();
   };

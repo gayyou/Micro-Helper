@@ -1,67 +1,55 @@
 import React from "react";
-import {LRU} from "../../utils/lru/LRU";
-import {isArray, isFunc, isUndef} from "../../utils";
+import ReactDOM from "react-dom";
+import Keeper from "./Keeper";
+import {CustomEvent} from "../../utils/event/CustomEvent";
 
-export default class KeepAlive extends React.PureComponent{
-  state: {
-    lru: LRU
-  };
+interface KeepAliveStatusData {
+  type?: string;
+  key?: string;
+  children: any[];
+}
+
+const KEEP_ALIVE = "keep-alive-";
+const offlineDOM: HTMLElement = document.createElement('div');
+let uid = 1;
+// TODO 使用一个事件系统来进行通信
+export const keepAliveEvent: CustomEvent<KeepAliveStatusData> = new CustomEvent();
+
+export default class KeepAlive extends React.Component{
+  el: HTMLElement = null;
+  id: string;
 
   constructor(props: any) {
     super(props);
-    this.state = {
-      lru: new LRU()
-    };
+    this.id = KEEP_ALIVE + uid++;
+  }
+
+  shouldComponentUpdate(nextProps, nextState, nextContext: any): boolean {
+    // 每次进行更新的时候，会触发事件，然后进行更新视图
+    keepAliveEvent.emit(this.id, {
+      children: nextProps.children
+    });
+    return false;
+  }
+
+  componentDidMount(): void {
+    // 创建一个离线节点，然后以这个节点为由
+    ReactDOM.render(<Keeper
+      id={this.id}
+      containerEl={this.el}
+    >
+      {this.props.children}
+    </Keeper>, offlineDOM);
   }
 
   /**
-   * @description 利用LRU淘汰算法进行缓存，当超过容量的时候进行淘汰算法
-   * @param children 当前渲染的时候传进来的组件
+   * @description 使用pureComponent组件，这样可以阻止很多时候的更新
    */
-  getCacheElement = (children: any[] | undefined) => {
-    if (isUndef(children)) {
-      return [];
-    }
-
-    if (!isArray(children)) {
-      children = [children];
-    }
-
-    let result = [];
-    let lru = this.state.lru;
-    let len = children.length;
-
-    for (let i = 0; i < len; i++) {
-      let item = children[i];
-      let { key, type } = item;
-
-      if (!isFunc(type) || isUndef(key)) {
-        continue;
-      }
-
-      if (lru.has(key)) {
-        // 如果存在已经初始化的组件，那么进行获取该组件实例，进行渲染
-        result.push(lru.get(key));
-      } else {
-        lru.set(key, item);
-        result.push(item);
-      }
-    }
-
-    return result;
-  }
-
-  componentWillUnmount(): void {
-    this.state.lru.clear();
-  }
-
   render() {
-    // @ts-ignore
-    let children = this.getCacheElement(this.props.children);
-    return (
-      <>
-        {children}
-      </>
-    );
+    return <div
+      ref={(el) => {
+        this.el = el;
+      }
+    }/>;
   }
 }
