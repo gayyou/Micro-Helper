@@ -64,7 +64,6 @@ export class LRU<T> {
   }
 
   public values(): IterableIterator<T> {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return this.map.values();
   }
 

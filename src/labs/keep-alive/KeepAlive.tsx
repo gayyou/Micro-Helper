@@ -34,6 +34,7 @@ export default class KeepAlive extends React.Component{
 
   componentDidMount(): void {
     // 创建一个离线节点，然后以这个节点为由
+    this.el.innerHTML = '';
     ReactDOM.render(<Keeper
       id={this.id}
       containerEl={this.el}
@@ -48,7 +49,7 @@ export default class KeepAlive extends React.Component{
   render() {
     return <div
       ref={(el) => {
-        this.el = el;
+        this.el = el.parentElement;
       }
     }/>;
   }

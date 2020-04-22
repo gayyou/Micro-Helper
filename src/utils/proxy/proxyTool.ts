@@ -94,6 +94,6 @@ const triggerHijack = (raw: any, func: Function, name: string, containerMap: Map
   containerMap.set(name, cb);
 };
 
-const listenerHijack = () => {
-
-};
+// const listenerHijack = () => {
+//
+// };
