@@ -8,15 +8,15 @@ interface Event {
   once(type: string, cb: Function): void;
 }
 
-export class CustomEvent<T> implements Event {
-  private eventMap: Map<string, Array<Function>>;
-
+export default class Emitter<eventType = {}> implements Event {
+  private _eventMap: Map<string, Array<Function>>;
+  
   constructor() {
-    this.eventMap = new Map();
+    this._eventMap = new Map();
   }
 
-  public emit(type: string, data: T): void {
-    let eventSub = this.eventMap.get(type);
+  public emit(type: string, data: eventType): void {
+    let eventSub = this._eventMap.get(type);
 
     if (isDef(eventSub)) {
       // 如果事件存在回调
@@ -34,9 +34,9 @@ export class CustomEvent<T> implements Event {
 
   public remove(type?: string, cb?: Function): void {
     if (isUndef(type)) {
-      this.eventMap = new Map();
+      this._eventMap = new Map();
     } else {
-      let eventSub = this.eventMap.get(type);
+      let eventSub = this._eventMap.get(type);
 
       if (isDef(eventSub)) {
         let newSub = [];
@@ -47,15 +47,15 @@ export class CustomEvent<T> implements Event {
           }
         }
 
-        this.eventMap.set(type, newSub);
+        this._eventMap.set(type, newSub);
       }
     }
   }
 
   public on(type: string, cb: Function): void {
-    let eventSub = this.eventMap.get(type);
+    let eventSub = this._eventMap.get(type);
     if (isUndef(eventSub)) {
-      this.eventMap.set(type, eventSub = []);
+      this._eventMap.set(type, eventSub = []);
     }
 
     eventSub.push(cb);

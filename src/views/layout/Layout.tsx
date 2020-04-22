@@ -10,8 +10,8 @@ import KeepAlive from "../../labs/keep-alive/KeepAlive";
 
 const layoutMainList: any[] = [
   Console,
-  Elements,
   Network,
+  Elements,
   Resources,
   Setting
 ];
@@ -31,7 +31,7 @@ export default class Layout extends React.Component {
         'Elements',
         'Resource'
       ],
-      index: 0
+      index: 1
     };
   }
 
