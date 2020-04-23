@@ -10,8 +10,8 @@ import KeepAlive from "../../labs/keep-alive/KeepAlive";
 
 const layoutMainList: any[] = [
   Console,
-  Elements,
   Network,
+  Elements,
   Resources,
   Setting
 ];

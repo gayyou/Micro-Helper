@@ -12,23 +12,32 @@ export function getPropertyObject(obj: any) {
   let enumerableNames = Object.keys(obj);
   let symbolNames = Object.getOwnPropertySymbols(obj);
   let propertyNames = Object.getOwnPropertyNames(obj);
-  let enumerableProperty = {};
-  let unEnumerableProperty = {};
+  let enumerableProperty = [];
+  let unEnumerableProperty = [];
 
   // 首先拿到所有可枚举和symbol属性
   for (let item of enumerableNames) {
-    enumerableNames[item] = obj[item];
+    enumerableProperty.push({
+      key: item,
+      value: obj[item]
+    });
   }
 
   for (let item of symbolNames) {
-    enumerableNames[item] = obj[item];
+    enumerableProperty.push({
+      key: item,
+      value: obj[item]
+    });
   }
 
   for (let item of propertyNames) {
     let property = obj[item];
 
     if (isUndef(property)) {
-      unEnumerableProperty[item] = property;
+      unEnumerableProperty.push({
+        key: item,
+        value: obj[item]
+      });
     }
   }
 

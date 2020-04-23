@@ -5,7 +5,9 @@ function resolve(dir) {
 
 module.exports = function override(config, env) {
   config.resolve.alias = {
-    '@': resolve('src')
+    '@': resolve('src'),
+    '@assets': resolve('src/assets'),
+    '@views': resolve('src/views')
   };
   return config;
 }

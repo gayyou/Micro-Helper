@@ -1,8 +1,8 @@
 import React from "react";
 import {Lifecycle} from "./lifecycle";
 import {isArray, isUndef} from "../../utils";
-import {warn} from "../../utils/log";
-import {LRU} from "../../utils/lru/LRU";
+import {warn} from "@/utils/log";
+import {LRU} from "@/utils/lru/LRU";
 import {keepAliveEvent} from "./KeepAlive";
 
 function getFirstComponent(children: any[] | any): {

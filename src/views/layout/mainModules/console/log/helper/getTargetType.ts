@@ -1,4 +1,4 @@
-import {getType, isArray, isBoolean, isFunc, isNumber, isPlainObject, isSymbol, isUndef} from "@/utils";
+import {getType, isArray, isBoolean, isFunc, isNumber, isPlainObject, isString, isSymbol, isUndef} from "@/utils";
 import {getString} from "@/utils/shared/toString";
 
 /**
@@ -7,7 +7,7 @@ import {getString} from "@/utils/shared/toString";
  * 检测类型由特殊到一般
  */
 export function getTargetType(tar: any) {
-  if (isUndef(tar) || isNumber(tar) || isBoolean(tar) || isSymbol(tar)) {
+  if (isUndef(tar) || isNumber(tar) || isBoolean(tar) || isSymbol(tar) || isString(tar)) {
     return getString(tar);
   } else if (isArray(tar)) {
     return `Array(${tar.length})`

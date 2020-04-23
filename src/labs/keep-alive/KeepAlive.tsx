@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Keeper from "./Keeper";
-import {CustomEvent} from "../../utils/event/CustomEvent";
+import {CustomEvent} from "@/utils/event/CustomEvent";
 
 interface KeepAliveStatusData {
   type?: string;
