@@ -1,7 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Keeper from "./Keeper";
+<<<<<<< HEAD
 import {CustomEvent} from "@/utils/event/CustomEvent";
+=======
+import Emitter from "@/utils/event/Emitter";
+>>>>>>> dfcf4d03a1633029759235a2a655ef4d4c841912
 
 interface KeepAliveStatusData {
   type?: string;
@@ -13,7 +17,7 @@ const KEEP_ALIVE = "keep-alive-";
 const offlineDOM: HTMLElement = document.createElement('div');
 let uid = 1;
 // TODO 使用一个事件系统来进行通信
-export const keepAliveEvent: CustomEvent<KeepAliveStatusData> = new CustomEvent();
+export const keepAliveEvent: Emitter<KeepAliveStatusData> = new Emitter();
 
 export default class KeepAlive extends React.Component{
   el: HTMLElement = null;

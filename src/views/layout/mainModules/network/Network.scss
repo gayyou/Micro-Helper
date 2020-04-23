@@ -1,0 +1,23 @@
+.network-container {
+    width: 100%;
+    .network-header {
+        background-color: green;
+        height: 40px;
+        .network-header-button {
+            background-color:transparent;
+            color: #fff;
+        }
+    }
+}
+
+.request-container {
+    height: auto;
+    .request-header {
+        display: flex;
+        justify-content: space-around;
+
+        span {
+            line-height: 1.5em;
+        }
+    }
+}

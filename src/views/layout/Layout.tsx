@@ -31,7 +31,7 @@ export default class Layout extends React.Component {
         'Elements',
         'Resource'
       ],
-      index: 0
+      index: 1
     };
   }
 

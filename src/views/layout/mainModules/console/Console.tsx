@@ -177,6 +177,7 @@ export default class Console extends React.Component {
           })}
         </div>
         <div className="input-area">
+          
           <input
             value={this.state.consoleInput}
             onKeyDown={this.inputKeyDown}
