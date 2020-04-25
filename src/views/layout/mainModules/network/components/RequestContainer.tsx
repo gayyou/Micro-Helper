@@ -1,26 +1,60 @@
 import React from "react";
 import RequestItem from "./RequestItem";
-import '../Network.scss'
+import "../Network.scss";
+import { requestData } from "../Network";
+
+//   Name: string,
+//   Status: string,
+//   Size: string,
+//   Time: string,
+//   URL: string
+
+import emptyIcon from "@/assets/icons/empty.png";
+
 
 class RequestContainer extends React.Component {
-    props: {
-        a: string
-    }
+  props: {
+    data: Array<requestData>; // 拿到最新的列表
+  };
   constructor(props) {
     super(props);
   }
   render() {
+    const requestList = data => {
+
+      return data.map((item, index) => {
+        const {Name, Status, Size, Time, URL} = item;
+        return (
+          <RequestItem data = {item} />
+        )
+      });
+    };
+    const emptyList = () => 
+      (
+        <tr>
+          <td className="network-empty-status">
+              <img src={emptyIcon} />
+              <p>empty</p>
+          </td>
+        </tr>
+      )
     return (
-        <div className="request-container">
-            <div className="request-header">
-                <span>Name</span>
-                <span>Status</span>
-                <span>Type</span>
-                <span>Size</span>
-                <span>Time</span>
-                <span>URL</span>
-            </div>
-        </div>
+      <table className="table-container">
+        <thead className="table-header table-row">
+          <tr>
+            <td className="first-col">Name</td>
+            <td>Status</td>
+            <td>Size</td>
+            <td>Time</td>
+          </tr>
+          {/* <td>URL</td> */}
+        </thead>
+        <tbody>
+          {
+            this.props.data.length ? requestList(this.props.data) : emptyList()
+          } 
+        </tbody>  
+      </table>
     );
   }
 }
