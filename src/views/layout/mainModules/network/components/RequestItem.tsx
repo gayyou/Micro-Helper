@@ -13,13 +13,13 @@ export default class RequestItem extends React.Component {
     console.log(123);
   } 
   render() {
+    const {name, status, size, time} = this.props.data;
     return (
       <tr className="request-item table-row" onClick={this.hanlderClick}>
-          <td>{this.props.data.Name}</td>
-          <td>{this.props.data.Status}</td>
-          <td>{this.props.data.Size}</td>
-          <td>{this.props.data.Time}</td>
-          {/* <td>{this.props.data.Url}</td> */}
+          <td>{name}</td>
+          <td>{status}</td>
+          <td>{size}</td>
+          <td>{time}</td>
       </tr>
     );
   }
