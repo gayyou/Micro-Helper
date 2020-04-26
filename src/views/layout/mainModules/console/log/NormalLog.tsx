@@ -2,7 +2,7 @@ import React from "react";
 import "./NormalLog.scss";
 import {getTargetType} from "@/views/layout/mainModules/console/log/helper/getTargetType";
 import ArrowRight from "@assets/icons/arrow_right.png";
-import {getPropertyObject} from "@views/layout/mainModules/console/log/helper/getPropertyObject";
+import {getPropertyComponentList} from "@views/layout/mainModules/console/log/helper/getPropertyComponentList";
 
 /**
  * @author Weybn
@@ -22,30 +22,32 @@ export default class NormalLog extends React.Component {
     isShowChild: false
   };
 
+  showChildList = () => {
+    this.setState({
+      isShowChild: !this.state.isShowChild
+    });
+  };
+
   render() {
-    let showString = getTargetType(this.props.data);
-    let childList = [];
+    let valuePreload = getTargetType(this.props.data);
+    let enumerableList, unEnumerableList;
 
     if (this.state.isShowChild) {
-      let {enumerableProperty, unEnumerableProperty} = getPropertyObject(this.props.data);
-
-      for (let item of enumerableProperty) {
-        childList.push()
-      }
-
-      for (let item of unEnumerableProperty) {
-
-      }
+      ({enumerableList, unEnumerableList} = getPropertyComponentList(this.props.data,  0));
     }
 
     return (
       <>
-        <div className="normal-log-container">
+        <div className="normal-log-container"
+          onClick={this.showChildList}
+        >
           <div className="log-arrow-container">
             <img className="arrow-image" src={ArrowRight} alt="Right Arrow"/>
           </div>
-          <span className="log-main-item">{showString}</span>
+          <span className="log-main-item">{valuePreload}</span>
         </div>
+        {this.state.isShowChild && [...enumerableList]}
+        {this.state.isShowChild && [...unEnumerableList]}
       </>
     );
   }
