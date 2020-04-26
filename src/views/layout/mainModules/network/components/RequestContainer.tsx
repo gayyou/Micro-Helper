@@ -16,14 +16,13 @@ class RequestContainer extends React.Component {
   props: {
     data: Array<requestData>; // 拿到最新的列表
   };
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
   render() {
     const requestList = data => {
 
       return data.map((item, index) => {
-        const {Name, Status, Size, Time, URL} = item;
         return (
           <RequestItem data = {item} />
         )
@@ -33,7 +32,7 @@ class RequestContainer extends React.Component {
       (
         <tr>
           <td className="network-empty-status">
-              <img src={emptyIcon} />
+              <img src={emptyIcon} alt="emptyicon"/>
               <p>empty</p>
           </td>
         </tr>

@@ -6,9 +6,7 @@ export default class RequestItem extends React.Component {
   props: {
     data: requestData
   };
-  constructor(props) {
-    super(props);
-  }
+  
   hanlderClick(e) {
     console.log(123);
   } 

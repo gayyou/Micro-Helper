@@ -49,7 +49,7 @@ export default class XhrHandler {
      * handle response headers when readystate === 2
     */
     public handleResponseHeaders():void  {
-        const headers:object = getHeaders(this._xhr);
+        // const headers:object = getHeaders(this._xhr);
         
         // networkEmitter.emit('send', this._id, )
     }
@@ -62,20 +62,20 @@ export default class XhrHandler {
 }
 
 // utils
-function getHeaders(xhr: XMLHttpRequest):object {
-    const rawData:string = xhr.getAllResponseHeaders() || '';
-    const headersArr:Array<string> = rawData.split('\n');
+// function getHeaders(xhr: XMLHttpRequest):object {
+//     const rawData:string = xhr.getAllResponseHeaders() || '';
+//     const headersArr:Array<string> = rawData.split('\n');
     
-    let ret: object = {};
+//     let ret: object = {};
     
-    // translate headers array to key-val object
-    for (let line of headersArr) {
-        if (line === '') continue;
-        let [key, val] = line.split(': ');
-        ret[key] = val;
-    }
-    return ret;
-}
+//     // translate headers array to key-val object
+//     for (let line of headersArr) {
+//         if (line === '') continue;
+//         let [key, val] = line.split(': ');
+//         ret[key] = val;
+//     }
+//     return ret;
+// }
 /**
  * get fileName
  * @param url 
@@ -86,12 +86,12 @@ export function getFileName(url: string): string {
     // get last path 
     let lastPath: string = paths[paths.length - 1];
     // define return value
-    let fileName: string;
+    let fileName: string = lastPath;
     // if last path has queryString like http://www.xxx.com/xxx.html
     if (lastPath.indexOf('?') !== -1)
         fileName = lastPath.split('?')[0]; 
     // if last path like http://www.xxx.com/，get hostname
-    if (!lastPath)
+    if (lastPath === '')
         fileName = new URL(url).hostname;
     return fileName;
 }

@@ -65,11 +65,11 @@ export default class Network extends React.Component {
         switch(req.readyState) {
           case 2: {
             // 2：HEADERS_RECEIVED
-            req.handler.handleResponseHeaders();
+            return req.handler.handleResponseHeaders();
           }
           case 4: {
             // 4: DONE
-            req.handler.handleDone();
+            return req.handler.handleDone();
           }
         }
       })
