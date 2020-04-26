@@ -34,8 +34,8 @@ function getFuncArguments(fn: Function): string {
 
 /**
  * @description 拿到对象属性的缩略图,只显示可枚举的属性
- * @param data
- * @param preloadPropertyNumber
+ * @param data 拿到的纯对象
+ * @param preloadPropertyNumber 显示对象内部的属性的个数
  */
 function getObjectPreloadString(data: Object, preloadPropertyNumber: number = -Infinity) {
   let {enumerableProperty} = getPropertyObject(data);
@@ -45,10 +45,15 @@ function getObjectPreloadString(data: Object, preloadPropertyNumber: number = -I
   }
 
   let resultString = '';
+  let i;
 
-  for (let i = 0; i < preloadPropertyNumber && i < enumerableProperty.length; i++) {
-    resultString += enumerableProperty[i].key + " :  " + getTargetType(enumerableProperty[i].value, -1);
+  for (i = 0; i < preloadPropertyNumber && i < enumerableProperty.length; i++) {
+    resultString += enumerableProperty[i].key + " :  " + getTargetType(enumerableProperty[i].value, -1) + ',';
   }
 
-  return resultString;
+  if (i < enumerableProperty.length) {
+    return resultString + '...';
+  }
+
+  return resultString.slice(0, -1);
 }

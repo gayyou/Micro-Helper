@@ -13,7 +13,6 @@ it('should return type string contains all types', function () {
     string: 'String',
     number: 1,
     boolean: true,
-    DocumentElement: document.documentElement,
     Undefined: undefined,
     Null: null,
     array: [],
