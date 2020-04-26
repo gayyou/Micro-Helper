@@ -57,3 +57,13 @@ function getObjectPreloadString(data: Object, preloadPropertyNumber: number = -I
 
   return resultString.slice(0, -1);
 }
+
+const baseTypes = ['number', 'true', 'false', 'string', 'undefined', 'null', 'symbol'];
+
+export function isBaseDataType(tar: any): boolean {
+  return baseTypes.includes(getTargetType(tar).toLowerCase());
+}
+
+export function isReferenceType(tar: any): boolean {
+  return !isBaseDataType(tar);
+}

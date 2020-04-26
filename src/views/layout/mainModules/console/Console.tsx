@@ -3,6 +3,7 @@ import React from "react";
 import {subscribeEvent} from "@/utils/proxy";
 import NormalLog from "./log/NormalLog";
 import ErrorLog from "./errorLog/ErrorLog";
+import LogFilter from "@views/layout/mainModules/console/logFilter/LogFilter";
 
 /**
  * @description 控制台奥做到两件事：1. 显示浏览器控制台的内容；2. 用户能够像控制台一样输入代码并且执行
@@ -16,7 +17,7 @@ import ErrorLog from "./errorLog/ErrorLog";
 interface ConsoleItem {
   id: number;
   type: LogType;
-  consoleType: ConsoleType;
+  consoleType: string;
   value: any;
 }
 
@@ -30,19 +31,15 @@ const ComponentTypeMatch = {
   warn: ErrorLog
 };
 
-enum ConsoleType {
-  LOG = 'log',
-  WARN = 'warn',
-  ERROR = 'error',
-  INFO = 'info',
-  CLEAR = 'clear',
-  ASSERT = 'assert',
-  DEBUG = 'debug'
-}
-
-const initAddConsleOptions = {
+const initAddConsoleOptions = {
   normal: ['log', 'info'],
   warn: ['warn', 'error']
+};
+
+export const logTypeArray = ['all', 'log', 'info', 'error', 'warn'];
+
+let errorEventHandler = (event) => {
+  console.error(event.error);
 };
 
 /**
@@ -50,7 +47,7 @@ const initAddConsleOptions = {
  * @param consoleType 监听的类型
  * @param type 输出形式，分为两种：
  */
-function createAddConsoleItemOfTypeFn(this: Console, consoleType: ConsoleType, type: LogType) {
+function createAddConsoleItemOfTypeFn(this: Console, consoleType: string, type: LogType) {
   return (...data) => {
     this.addConsoleItem(data, consoleType, type);
   }
@@ -62,21 +59,41 @@ export default class Console extends React.Component {
   state: {
     consoleList: ConsoleItem[];
     consoleInput: string;
+    consoleListCache: ConsoleItem[];
+    currentType: string;
   };
 
   constructor(props: any) {
     super(props);
     this.state = {
       consoleInput: '',
-      consoleList: []
+      consoleList: [],
+      consoleListCache: [],
+      currentType: 'all'
     };
     this.init();
     setTimeout(() => {
-      console.log({name: {name: 123}})
+      console.log({
+        map: new Map(),
+        set: new Set(),
+        date: new Date(),
+        pattern: new RegExp(/\d/),
+        math: Math,
+        symbol: Symbol(),
+        weakMap: new WeakMap(),
+        weakSet: new WeakSet(),
+        string: 'String',
+        number: 1,
+        boolean: true,
+        Undefined: undefined,
+        Null: null,
+        array: [],
+        object: {}
+      })
     }, 1000);
   }
 
-  createConsoleFuncSubscribe(type: ConsoleType, cb: Function) {
+  createConsoleFuncSubscribe(type: string, cb: Function) {
     subscribeEvent(window, 'console', type, cb);
   }
 
@@ -86,56 +103,58 @@ export default class Console extends React.Component {
    * @param consoleType 控制台输出的类型，比如info、log、error等
    * @param type 两大类，第一类是正常输出，第二类错误输出
    */
-  addConsoleItem(values: any[], consoleType: ConsoleType, type: LogType) {
-    let list = this.state.consoleList;
+  addConsoleItem(values: any[], consoleType: string, type: LogType) {
+    let {consoleListCache, consoleList, currentType} = this.state;
+    // 标志量，用来标志是否应当更新当前的渲染层，可以减少不必要的更新操作
+    let consoleListIsChanged = false;
+
+    // 如果控制台输出的长度为空的话，那么说明输出了undefined，此时要进行添加数据
+    if (values.length === 0) {
+      values.push(undefined);
+    }
+
     for (let value of values) {
-      list.push({
+      let item = {
         type,
         consoleType,
         value,
         id: uid++
-      });
+      };
+
+      consoleListCache.push(item);
+
+      if (consoleType === currentType || currentType === 'all') {
+        // 如果添加的项的类型是当前类型的话，那么顺便添加到consoleList中
+        consoleList.push(item);
+        consoleListIsChanged = true;
+      }
     }
 
-    if (values.length === 0) {
-      list.push({
-        type,
-        consoleType,
-        value: undefined,
-        id: uid++
+    if (consoleListIsChanged) {
+      this.setState({
+        consoleList: consoleList
       });
     }
-
-    this.setState({
-      consoleList: list
-    });
   }
 
   init() {
     // 下面对console打印的内容进行劫持并且添加至list中
-    let modeKeys = Object.keys(initAddConsleOptions);
+    let modeKeys = Object.keys(initAddConsoleOptions);
 
     for (let mode of modeKeys) {
-      let arr = initAddConsleOptions[mode];
+      let arr = initAddConsoleOptions[mode];
 
       for (let item of arr) {
         this.createConsoleFuncSubscribe(item, createAddConsoleItemOfTypeFn.call(this, item, mode));
       }
     }
+    window.addEventListener('error', errorEventHandler);
+    window.addEventListener('unhandledrejection', errorEventHandler);
+  }
 
-    // // 下面是进行window的错误事件监听
-    // useEffect(() => {
-    //   let handler = (event) => {
-    //     console.error(event.error);
-    //   };
-    //   window.addEventListener('error', handler);
-    //   window.addEventListener('unhandledrejection', handler);
-    //
-    //   return () => {
-    //     window.removeEventListener('error', handler);
-    //     window.removeEventListener('unhandledrejection', handler);
-    //   }
-    // });
+  componentWillUnmount(): void {
+    window.removeEventListener('error', errorEventHandler);
+    window.removeEventListener('unhandledrejection', errorEventHandler);
   }
 
   inputKeyDown = (event) => {
@@ -158,15 +177,65 @@ export default class Console extends React.Component {
     }
   }
 
+  /**
+   * @description 控制台输出逻辑处理
+   * @param event react的事件实例
+   */
   inputChange = (event) => {
     this.setState({
       consoleInput: event.target.value
     });
-  }
+  };
+
+  /**
+   * @description 根据console的类型进行选择显示
+   * @param type 控制台输出的类型
+   */
+  filterConsoleItem = (type: string) => {
+    let {currentType, consoleListCache} = this.state;
+
+    if (type === currentType) {
+      // 选择的内容和上次一样的话，是不需要进行更新的
+      return ;
+    }
+
+    let newConsoleList;
+
+    if (type === 'all') {
+      // 全部的时候将所有内容进行更新，此时直接采取引用的方式来
+      newConsoleList = consoleListCache;
+    } else {
+      // 其余情况的话就㤇重新创建数组然后赋值
+      newConsoleList = [];
+
+      for (let item of consoleListCache) {
+        if (item.consoleType === type) {
+          newConsoleList.push(item);
+        }
+      }
+    }
+
+    this.setState({
+      consoleList: newConsoleList,
+      currentType: type
+    });
+  };
+
+  clearConsole = () => {
+    this.setState({
+      consoleList: [],
+      consoleListCache: []
+    });
+  };
 
   render() {
     return (
       <div className="console-container">
+        <LogFilter
+          selectHandler={this.filterConsoleItem}
+          clearHandler={this.clearConsole}
+          currentFilterType={this.state.currentType}
+        />
         <div className="log-area">
           {this.state.consoleList.map((item) => {
             let Item = ComponentTypeMatch[item.type];
@@ -178,7 +247,6 @@ export default class Console extends React.Component {
           })}
         </div>
         <div className="input-area">
-          
           <input
             value={this.state.consoleInput}
             onKeyDown={this.inputKeyDown}

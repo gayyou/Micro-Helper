@@ -33,12 +33,12 @@ export default class NormalLog extends React.Component {
     let enumerableList, unEnumerableList;
 
     if (this.state.isShowChild) {
-      ({enumerableList, unEnumerableList} = getPropertyComponentList(this.props.data,  0));
+      ({enumerableList, unEnumerableList} = getPropertyComponentList(this.props.data,  1));
     }
 
     return (
-      <>
-        <div className="normal-log-container"
+      <div className="normal-log-container">
+        <div className="normal-log-first-line"
           onClick={this.showChildList}
         >
           <div className="log-arrow-container">
@@ -48,7 +48,8 @@ export default class NormalLog extends React.Component {
         </div>
         {this.state.isShowChild && [...enumerableList]}
         {this.state.isShowChild && [...unEnumerableList]}
-      </>
+      </div>
+
     );
   }
 }
