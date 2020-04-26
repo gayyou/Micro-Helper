@@ -70,9 +70,10 @@ export default class Console extends React.Component {
       consoleInput: '',
       consoleList: []
     };
-    // @ts-ignore
-    window.a = this;
     this.init();
+    setTimeout(() => {
+      console.log({name: {name: 123}})
+    }, 1000);
   }
 
   createConsoleFuncSubscribe(type: ConsoleType, cb: Function) {

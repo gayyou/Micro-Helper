@@ -1,4 +1,4 @@
-import {isString, isSymbol} from "../../utils";
+import {isString, isSymbol} from "@/utils";
 
 test('Test index utils', () => {
   expect(isSymbol(Symbol())).toBeTruthy();
