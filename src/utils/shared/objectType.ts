@@ -21,6 +21,14 @@ export const isSymbol = (tar: any) => getType(tar) === 'Symbol';
 
 export const isString = (tar: any) => getType(tar) === 'String';
 
+export const isMap = (tar: any) => getType(tar) === 'Map';
+
+export const isSet = (tar: any) => getType(tar) === 'Set';
+
+export const isWeakMap = (tar: any) => getType(tar) === 'WeakMap';
+
+export const isWeakSet = (tar: any) => getType(tar) === 'WeakSet';
+
 export const isBuildInObject = (tar: any) => isDef(objectTypeSet.has(getType(tar)));
 
 export const isNumber = (tar: any) => getType(tar) === 'Number';

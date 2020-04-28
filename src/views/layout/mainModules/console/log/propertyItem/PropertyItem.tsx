@@ -2,7 +2,6 @@ import React from "react";
 import "./PropertyItem.scss";
 import {getTargetType, isReferenceType} from "@views/layout/mainModules/console/log/helper/getTargetType";
 import {getPropertyComponentList} from "@views/layout/mainModules/console/log/helper/getPropertyComponentList";
-import {isPlainObject} from "@/utils";
 
 enum PropertyItemEnum {
   ENUMERABLE,
@@ -58,6 +57,7 @@ function getPropertyComponentClassHOC(type: PropertyItemEnum) {
       if (this.state.isShowChild) {
         ({enumerableList, unEnumerableList} = getPropertyComponentList(value, indent + 1));
       }
+      console.table(unEnumerableList)
 
       return (
         <>

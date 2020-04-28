@@ -148,8 +148,8 @@ export default class Console extends React.Component {
         this.createConsoleFuncSubscribe(item, createAddConsoleItemOfTypeFn.call(this, item, mode));
       }
     }
-    window.addEventListener('error', errorEventHandler);
-    window.addEventListener('unhandledrejection', errorEventHandler);
+    // window.addEventListener('error', errorEventHandler);
+    // window.addEventListener('unhandledrejection', errorEventHandler);
   }
 
   componentWillUnmount(): void {
