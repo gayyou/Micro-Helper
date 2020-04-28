@@ -1,44 +1,42 @@
-import './Network.scss'
+import "./Network.scss";
 import React from "react";
-import {XhrHandler} from './handlers';
-import Emitter from "@/utils/event/Emitter"
+import { XhrHandler } from "./handlers";
+import Emitter from "@/utils/event/Emitter";
 import RequestContainer from "./components/RequestContainer";
-import {test1} from './mock';
+import { test1, test2 } from "./mock";
+import Drawer from '@/components/Drawer';
 
 // todos:
 // 只能拦截基于xhr、fetch的ajax请求，jsonp无法实现
 // xhr修改原型上的open和send，劫持完再改回原来的方法
 
 // network全局eventbus
-export const networkEmitter: Emitter  = new Emitter();
+export const networkEmitter: Emitter = new Emitter();
 
 export interface requestData {
-  name: string,
-  status: string,
-  size: string,
-  time: string,
-  url: string
+  name: string;
+  status: string;
+  size: string;
+  time: string;
+  url: string;
+}
+interface stateType {
+  requests: Array<requestData>,
+  visiable: true
 }
 /**
  * @author Jaycole
+ * @description a panel show something about ajax requests 
  */
 export default class Network extends React.Component {
-  state: {
-    requests: Array<requestData>;
-  }
+  state: stateType
   constructor(props) {
     super(props);
     this.init();
     this.state = {
-      requests: [{
-        name: 'abc',
-        status: 'pending',
-        size: '300kb',
-        time: '200ms',
-        url: 'http://localhost:8080'
-      }]
-    }
-    this.clearRequestData = this.clearRequestData.bind(this);
+      requests: [],
+      visiable: true
+    };
   }
   init() {
     this.proxyXhr();
@@ -53,16 +51,16 @@ export default class Network extends React.Component {
     const origSetRequestHeader = xhrProto.setRequestHeader;
     // const origSetRequestHeader = xhrProto.setRequestHeader;
 
-    xhrProto.open = function(...arg) { 
+    xhrProto.open = function (...arg) {
       // this is an instance of XMLHttpRequest
-      const req: any = this; 
+      const req: any = this;
       const [method, url] = arg;
       // get handle instance
-      req.handler = new XhrHandler(req, method, url); 
+      req.handler = new XhrHandler(req, method, url);
 
       // watch readystate
-      req.addEventListener('readystatechange', () => { 
-        switch(req.readyState) {
+      req.addEventListener("readystatechange", () => {
+        switch (req.readyState) {
           case 2: {
             // 2：HEADERS_RECEIVED
             return req.handler.handleResponseHeaders();
@@ -72,36 +70,36 @@ export default class Network extends React.Component {
             return req.handler.handleDone();
           }
         }
-      })
-      // 调用缓存的方法
+      });
+
+      // call origin method
       origOpen.apply(this, arg);
-    }
+    };
     // // proxy send
-    xhrProto.send = function(data) {
+    xhrProto.send = function (data) {
       this.handler.handleSend(data);
       origSend.apply(this, data);
-    }
+    };
     // proxy setRequestHeader
-    xhrProto.setRequestHeader = function(key, val) {
+    xhrProto.setRequestHeader = function (key, val) {
       this.handler.handleRequestHeader(key, val);
       origSetRequestHeader.apply(this, arguments);
-    }
-    // watch send、update events
-    networkEmitter.on('send', data =>{this.addReqRecord(data)});
-    networkEmitter.on('update', ()=>{this.updateReqRecord()});
-  }
-  updateReqRecord() {
+    };
 
+    // watch send、update events
+    networkEmitter.on("send", data => this.addReqRecord(data));
+    networkEmitter.on("update", () => this.updateReqRecord());
   }
+  updateReqRecord() {}
   /**
    * add a new request record to network panel
-   * @param initData 
+   * @param initData
    */
   addReqRecord(initData) {
-    console.log(initData)
-    this.setState({
-      requests: this.state.requests.push(initData)
-    })
+    // setState使用函数避免操作合并
+    this.setState((state: stateType) => ({
+      requests: [...state.requests, initData]
+    }))
   }
   resetXhr() {
 
@@ -111,18 +109,49 @@ export default class Network extends React.Component {
   }
   clearRequestData(): void {
     this.setState({
-      requests: []
-    })
+      requests: [],
+    });
   }
   componentDidMount() {
     test1();
+    test2();
+  }
+  handleClose = () => {
+    this.setState({
+      visiable: false
+    })
+  }
+  handleOpen = data => {
+    // open drawer and set drawer body
+    this.setState({
+      visiable: true
+    })
+  }
+  renderDetail() {
+    return (
+      <></>
+    )
   }
   render() {
     return (
       <div className="network-container">
-        <RequestContainer data = {this.state.requests} />
+         <Drawer
+          visiable={this.state.visiable}
+          onClose={this.handleClose}
+         >
+           {this.renderDetail()}
+         </Drawer>
+        <RequestContainer 
+          data={this.state.requests} 
+          openMask={this.handleOpen} 
+        />
         <footer className="network-footer">
-          <button className="network-clear-button" onClick={this.clearRequestData}>clear</button>
+          <button
+            className="network-clear-button"
+            onClick={() => this.clearRequestData}
+          >
+            clear
+          </button>
         </footer>
       </div>
     );

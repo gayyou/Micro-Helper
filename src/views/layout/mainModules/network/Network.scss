@@ -1,4 +1,5 @@
 .network-container {
+    position: relative;
     width: 100%;
     .network-footer {
         position: fixed;
@@ -42,17 +43,21 @@
        text-align: right;
     }
     .table-row {
+        
         width: 100%;
         border-bottom: 1px solid #e8e8e8;
-    }
-    td {
-        // min-
-        line-height: 2em;
-        border-right: 1px solid #f0f0f0;
-        padding: 3px 10px;
-        width: 10%;
-    }
-    .first-col {
-        width: 30%;
+        td {
+            // min-
+            line-height: 2em;
+            border-right: 1px solid #f0f0f0;
+            padding: 3px 10px;
+            width: 10%;
+        }
+        .first-col {
+            width: 30%;
+        }
+        .text-right-col {
+            text-align: right;
+        }
     }
 }

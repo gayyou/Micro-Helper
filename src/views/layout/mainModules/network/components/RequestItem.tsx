@@ -7,17 +7,19 @@ export default class RequestItem extends React.Component {
     data: requestData
   };
   
-  hanlderClick(e) {
+  private hanlderClick(e): void {
+    e.preventDefault();
+    
     console.log(123);
   } 
   render() {
     const {name, status, size, time} = this.props.data;
     return (
-      <tr className="request-item table-row" onClick={this.hanlderClick}>
+      <tr className="request-item table-row" >
           <td>{name}</td>
           <td>{status}</td>
-          <td>{size}</td>
-          <td>{time}</td>
+          <td className="text-right-col">{size}</td>
+          <td className="text-right-col">{time}</td>
       </tr>
     );
   }

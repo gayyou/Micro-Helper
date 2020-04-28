@@ -11,22 +11,25 @@ import { requestData } from "../Network";
 
 import emptyIcon from "@/assets/icons/empty.png";
 
-
 class RequestContainer extends React.Component {
   props: {
-    data: Array<requestData>; // 拿到最新的列表
+    data: Array<requestData>;
+    openMask: Function,
+    children?: any
   };
-  // constructor(props) {
-  //   super(props);
-  // }
-  render() {
-    const requestList = data => {
+  handleClick = e => {
+    console.log(e.currentTarget);
+    console.log(e.target.parentNode);
 
-      return data.map((item, index) => {
-        return (
-          <RequestItem data = {item} />
-        )
-      });
+    // find current request
+
+    // send current request data
+    this.props.openMask();
+  }
+  render() {
+    const requestList = () => {
+      // console.log(this.props.data)
+      return this.props.data.map((item: any) => (<RequestItem data = {item} key={item.id} />));
     };
     const emptyList = () => 
       (
@@ -42,15 +45,15 @@ class RequestContainer extends React.Component {
         <thead className="table-header table-row">
           <tr>
             <td className="first-col">Name</td>
-            <td>Status</td>
+            <td >Status</td>
             <td>Size</td>
             <td>Time</td>
           </tr>
           {/* <td>URL</td> */}
         </thead>
-        <tbody>
+        <tbody onClick={this.handleClick}>
           {
-            this.props.data.length ? requestList(this.props.data) : emptyList()
+            this.props.data.length ? requestList() : emptyList()
           } 
         </tbody>  
       </table>
