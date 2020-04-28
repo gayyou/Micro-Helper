@@ -28,8 +28,7 @@ export function getTargetType(tar: any, objShowMaxPropertyNumber: number = objec
 }
 
 function getFuncArguments(fn: Function): string {
-  // @ts-ignore
-  return /(\([^)]*\))/.exec(fn.toLocalString())[0];
+  return /(\([^)]*\))/.exec(fn.toString())[0];
 }
 
 /**
@@ -56,4 +55,14 @@ function getObjectPreloadString(data: Object, preloadPropertyNumber: number = -I
   }
 
   return resultString.slice(0, -1);
+}
+
+const baseTypes = ['number', 'true', 'false', 'string', 'undefined', 'null', 'symbol'];
+
+export function isBaseDataType(tar: any): boolean {
+  return baseTypes.includes(getType(tar).toLowerCase());
+}
+
+export function isReferenceType(tar: any): boolean {
+  return !isBaseDataType(tar);
 }

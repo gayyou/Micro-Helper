@@ -1,8 +1,7 @@
 import React from "react";
 import "./PropertyItem.scss";
-import {getTargetType} from "@views/layout/mainModules/console/log/helper/getTargetType";
+import {getTargetType, isReferenceType} from "@views/layout/mainModules/console/log/helper/getTargetType";
 import {getPropertyComponentList} from "@views/layout/mainModules/console/log/helper/getPropertyComponentList";
-import {isPlainObject} from "@/utils";
 
 enum PropertyItemEnum {
   ENUMERABLE,
@@ -53,21 +52,22 @@ function getPropertyComponentClassHOC(type: PropertyItemEnum) {
       let {indent} = this.props;
       let valuePreload = getTargetType(value);
       let enumerableList, unEnumerableList;
-      let isObject = isPlainObject(value);
+      let isComplex = isReferenceType(value);
 
       if (this.state.isShowChild) {
         ({enumerableList, unEnumerableList} = getPropertyComponentList(value, indent + 1));
       }
+      console.table(unEnumerableList)
 
       return (
         <>
-          <div className={isObject ? this.state.isShowChild ?
-            "property-item-container property-item-normal property-item-active" : "property-item-normal property-item-container"
+          <div className={isComplex ? this.state.isShowChild ?
+            "property-item-container property-item-normal property-item-active" : "property-item-container property-item-normal"
             : "property-item-container"}
             style={{
-              paddingLeft: this.props.indent * 10
+              marginLeft: this.props.indent * 10
             }}
-            onClick={isObject ? this.showChildList : null}
+            onClick={isComplex ? this.showChildList : null}
           >
             <div className="property-item">
               <span className="property-item-key"

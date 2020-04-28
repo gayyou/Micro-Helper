@@ -1,4 +1,4 @@
-import {isArray, isFunc, isPlainObject} from "@/utils";
+import {isArray, isFunc, isPlainObject, isString} from "@/utils";
 
 /**
  * @description
@@ -11,6 +11,8 @@ export function getString(tar: any): string {
     return JSON.stringify(tar);
   } else if (typeof tar === 'undefined') {
     return 'undefined';
+  } else if (isString(tar)) {
+    return `"${tar}"`;
   }
 
   return tar.toString();
