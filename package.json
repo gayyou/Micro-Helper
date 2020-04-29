@@ -1,5 +1,6 @@
 {
   "name": "help-app",
+  "main": "src/index.ts",
   "version": "0.1.0",
   "private": true,
   "homepage": ".",

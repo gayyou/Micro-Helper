@@ -18,8 +18,6 @@ class RequestContainer extends React.Component {
     children?: any
   };
   handleClick = e => {
-    console.log(e.currentTarget);
-    console.log(e.target.parentNode);
 
     // find current request
 
@@ -49,12 +47,9 @@ class RequestContainer extends React.Component {
             <td>Size</td>
             <td>Time</td>
           </tr>
-          {/* <td>URL</td> */}
         </thead>
         <tbody onClick={this.handleClick}>
-          {
-            this.props.data.length ? requestList() : emptyList()
-          } 
+          {this.props.data.length ? requestList() : emptyList()} 
         </tbody>  
       </table>
     );

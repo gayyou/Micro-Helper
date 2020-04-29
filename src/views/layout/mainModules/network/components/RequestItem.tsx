@@ -15,7 +15,7 @@ export default class RequestItem extends React.Component {
   render() {
     const {name, status, size, time} = this.props.data;
     return (
-      <tr className="request-item table-row" >
+      <tr className="request-item table-row" data-id="">
           <td>{name}</td>
           <td>{status}</td>
           <td className="text-right-col">{size}</td>

@@ -24,9 +24,10 @@ interface stateType {
   requests: Array<requestData>,
   visiable: true
 }
+
 /**
  * @author Jaycole
- * @description a panel show something about ajax requests 
+ * @description a network panel shows something about ajax  
  */
 export default class Network extends React.Component {
   state: stateType
@@ -139,12 +140,12 @@ export default class Network extends React.Component {
           visiable={this.state.visiable}
           onClose={this.handleClose}
          >
-           {this.renderDetail()}
+          {this.renderDetail()}
          </Drawer>
-        <RequestContainer 
-          data={this.state.requests} 
-          openMask={this.handleOpen} 
-        />
+            <RequestContainer 
+              data={this.state.requests} 
+              openMask={this.handleOpen} 
+            />
         <footer className="network-footer">
           <button
             className="network-clear-button"

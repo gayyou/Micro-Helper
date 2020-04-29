@@ -25,5 +25,9 @@
   "include": [
     "src"
   ],
+  "exclude": [
+    "node_modules",
+    "server"
+  ],
   "extends": "./paths.json"
 }
