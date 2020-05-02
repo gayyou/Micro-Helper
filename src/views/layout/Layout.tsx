@@ -3,7 +3,7 @@ import "./Layout.scss";
 import LayoutHeader from "./header/LayoutHeader";
 import Console from './mainModules/console/Console'
 import Elements from "./mainModules/elements/Elements";
-import Network from "./mainModules/network/Network";
+import Network from "./mainModules/network";
 import Resources from "./mainModules/resources/Resources";
 import Setting from "./mainModules/setting/Setting";
 import KeepAlive from "../../labs/keep-alive/KeepAlive";
@@ -31,7 +31,7 @@ export default class Layout extends React.Component {
         'Elements',
         'Resource'
       ],
-      index: 0
+      index: 1 // 方便调试
     };
   }
 

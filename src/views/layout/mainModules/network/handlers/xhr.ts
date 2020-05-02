@@ -1,18 +1,8 @@
 
-import {networkEmitter} from '../Network';
+import {networkEmitter} from '../index';
 import {isPlainObject} from "@/utils";
+import {XhrDataType} from '../Network'
 
-interface xhrDataType {
-    method: string,
-    url: string,
-    id: string,
-    responseHeaders: object,
-    requestHeaders: object,
-    time: Date,
-    status: string,
-    name: string,
-    sendData: any
-}
 export default class XhrHandler {
     private _id: string; // request id
     private _xhr: XMLHttpRequest;  // xhr instance
@@ -34,9 +24,12 @@ export default class XhrHandler {
             status: 'pending',
             size: "0B",
             time: 'pending',
+            startTime: '',
+            endTime: '',
             sendData: null,
             requestHeaders: {},
-            responseHeaders: {}
+            responseHeaders: {},
+            response: null
         }
     }
    
@@ -61,33 +54,43 @@ export default class XhrHandler {
         if (data !== null && isPlainObject(data)) {
             this._xhrData.sendData = data;
         }
+        // this._xhrData.startTime = new Date().getTime();
         networkEmitter.emit('send', this._xhrData);
     }
     public handleDone(): void {
-        
+        // update request status
+        let status: string = this._xhr.status === 0 ? '(failed)' : this._xhr.status + '';
+        this._xhrData.status = status;
+        // update request time
+        this._xhrData.time = getTime(this._xhrData.startTime, this._xhrData.endTime);
+        // update response data
+        const resType: string = this._xhr.responseType;
+        this._xhrData.response = this._xhr.response;
     }
     /**
      * handle response headers when readystate === 2
     */
     public handleResponseHeaders(): void  {
         const headers:object = getResponseHeaders(this._xhr);
-        
-        // networkEmitter.emit('update', this._id, )
+        this._xhrData.responseHeaders = headers;
     }
     /**
      * only handle custom request headers (setRequestHeader)
      */
     public handleRequestHeader(key: string, val: string): void {
         this._xhrData.requestHeaders[key] = val;
-        // networkEmitter.emit('update', this._xhrData);
     }
 }
 
 // utils
+function getTime(startTime:string, endTime: string): string {
+    let time:number = parseInt(endTime) - parseInt(startTime);
+    let fix: string = 'ms';
+    return time + fix
+}
 function getResponseHeaders(xhr: XMLHttpRequest):object {
     const rawData:string = xhr.getAllResponseHeaders() || '';
     const headersArr:Array<string> = rawData.split('\n');
-    
     let ret: object = {};
     
     // translate headers array to key-val object

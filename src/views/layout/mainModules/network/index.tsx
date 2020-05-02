@@ -2,9 +2,11 @@ import "./Network.scss";
 import React from "react";
 import { XhrHandler } from "./handlers";
 import Emitter from "@/utils/event/Emitter";
-import RequestContainer from "./components/RequestContainer";
-import { test1, test2 } from "./mock";
+import {RequestContainer, RequestDetail} from "./components";
+
+import { test1, test2,  default as mock } from "./mock";
 import Drawer from '@/components/Drawer';
+import { NetworkStateType } from './Network';
 
 // todos:
 // 只能拦截基于xhr、fetch的ajax请求，jsonp无法实现
@@ -13,31 +15,26 @@ import Drawer from '@/components/Drawer';
 // network全局eventbus
 export const networkEmitter: Emitter = new Emitter();
 
-export interface requestData {
-  name: string;
-  status: string;
-  size: string;
-  time: string;
-  url: string;
-}
-interface stateType {
-  requests: Array<requestData>,
-  visiable: true
-}
-
 /**
  * @author Jaycole
  * @description a network panel shows something about ajax  
  */
 export default class Network extends React.Component {
-  state: stateType
+  state: NetworkStateType
   constructor(props) {
     super(props);
     this.init();
     this.state = {
       requests: [],
-      visiable: true
+      visiable: true,
+      id: ''
     };
+  }
+  componentDidMount() {
+    for (let cb of mock) 
+      cb();
+    // watch open events
+    networkEmitter.on('open', this.handleOpen);
   }
   init() {
     this.proxyXhr();
@@ -62,34 +59,52 @@ export default class Network extends React.Component {
       // watch readystate
       req.addEventListener("readystatechange", () => {
         switch (req.readyState) {
+          // 1：open
+          case 1: {
+            // record start time 
+            let startTime = (+new Date())
+            req.handler._xhrData.startTime = startTime;
+            console.log()
+          }
           case 2: {
             // 2：HEADERS_RECEIVED
             return req.handler.handleResponseHeaders();
           }
           case 4: {
             // 4: DONE
+            let endTime = (+new Date())
+            req.handler._xhrData.endTime = endTime;
             return req.handler.handleDone();
           }
         }
       });
-
       // call origin method
-      origOpen.apply(this, arg);
+      try {
+        origOpen.apply(this, arg);
+      } catch (error) {
+        throw error;
+      }
     };
     // // proxy send
     xhrProto.send = function (data) {
       this.handler.handleSend(data);
-      origSend.apply(this, data);
+      try {
+        origSend.apply(this, data);
+      } catch (error) {
+        throw error;
+      }
     };
     // proxy setRequestHeader
     xhrProto.setRequestHeader = function (key, val) {
       this.handler.handleRequestHeader(key, val);
-      origSetRequestHeader.apply(this, arguments);
+      try {
+        origSetRequestHeader.apply(this, arguments);
+      } catch (error) {
+        throw error;
+      }
     };
-
     // watch send、update events
     networkEmitter.on("send", data => this.addReqRecord(data));
-    networkEmitter.on("update", () => this.updateReqRecord());
   }
   updateReqRecord() {}
   /**
@@ -98,7 +113,7 @@ export default class Network extends React.Component {
    */
   addReqRecord(initData) {
     // setState使用函数避免操作合并
-    this.setState((state: stateType) => ({
+    this.setState((state: NetworkStateType) => ({
       requests: [...state.requests, initData]
     }))
   }
@@ -113,25 +128,23 @@ export default class Network extends React.Component {
       requests: [],
     });
   }
-  componentDidMount() {
-    test1();
-    test2();
-  }
+  
   handleClose = () => {
     this.setState({
       visiable: false
     })
   }
   handleOpen = data => {
+    console.log(data.id);
     // open drawer and set drawer body
     this.setState({
-      visiable: true
+      visiable: true,
+      id: data.id
     })
   }
-  renderDetail() {
-    return (
-      <></>
-    )
+  getReqData() {
+    console.log()
+    return this.state.requests.filter(request => request.id === this.state.id);
   }
   render() {
     return (
@@ -140,11 +153,12 @@ export default class Network extends React.Component {
           visiable={this.state.visiable}
           onClose={this.handleClose}
          >
-          {this.renderDetail()}
+          <RequestDetail 
+            data={this.getReqData()}
+          />
          </Drawer>
             <RequestContainer 
               data={this.state.requests} 
-              openMask={this.handleOpen} 
             />
         <footer className="network-footer">
           <button

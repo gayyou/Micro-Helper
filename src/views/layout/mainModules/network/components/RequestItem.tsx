@@ -1,21 +1,19 @@
 import React from "react";
-import {requestData} from '../Network'
+import { XhrDataType } from "../Network";
 import '../Network.scss';
+import { networkEmitter } from '../index';
 
 export default class RequestItem extends React.Component {
   props: {
-    data: requestData
+    data: XhrDataType
   };
-  
-  private hanlderClick(e): void {
-    e.preventDefault();
-    
-    console.log(123);
+  private hanlderClick = ():void => {
+    networkEmitter.emit('open', this.props.data);
   } 
   render() {
-    const {name, status, size, time} = this.props.data;
+    const {name, status, size, time, id} = this.props.data;
     return (
-      <tr className="request-item table-row" data-id="">
+      <tr className="request-item table-row" onClick={this.hanlderClick}>
           <td>{name}</td>
           <td>{status}</td>
           <td className="text-right-col">{size}</td>
