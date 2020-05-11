@@ -16,7 +16,10 @@ export default class ErrorLog extends React.Component {
   render() {
     return (
       <div className="error-log-container">
-        我是错误
+        <span className="icon-span"/>
+        <div className="error-log-detail">
+
+        </div>
       </div>
     );
   }

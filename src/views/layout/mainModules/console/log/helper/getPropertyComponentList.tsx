@@ -1,4 +1,3 @@
-import {isPlainObject, isSymbol} from "@/utils";
 import {getPropertyObject} from "@views/layout/mainModules/console/log/helper/getPropertyObject";
 import {
   EnumerablePropertyItem,

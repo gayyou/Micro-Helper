@@ -148,6 +148,8 @@ export default class Console extends React.Component {
         this.createConsoleFuncSubscribe(item, createAddConsoleItemOfTypeFn.call(this, item, mode));
       }
     }
+
+    // 进行注册捕获异常
     // window.addEventListener('error', errorEventHandler);
     // window.addEventListener('unhandledrejection', errorEventHandler);
   }
@@ -171,7 +173,7 @@ export default class Console extends React.Component {
         result = eval(`(${code})`);
       } catch (e) {
         // 如果运行失败，那么添加失败项到控制台中
-        console.log(e)
+        console.error(e)
       }
       console.log(result)
     }
@@ -237,20 +239,24 @@ export default class Console extends React.Component {
           currentFilterType={this.state.currentType}
         />
         <div className="log-area">
-          {this.state.consoleList.map((item) => {
-            let Item = ComponentTypeMatch[item.type];
-            return (<Item
-              data={item.value}
-              id={item.id}
-              key={item.id}
-            />)
-          })}
+          <div className="log-scroll-container">
+            {this.state.consoleList.map((item) => {
+              let Item = ComponentTypeMatch[item.type];
+              return (<Item
+                data={item.value}
+                id={item.id}
+                key={item.id}
+              />)
+            })}
+          </div>
         </div>
         <div className="input-area">
           <input
+            className="console-input"
             value={this.state.consoleInput}
             onKeyDown={this.inputKeyDown}
             onChange={this.inputChange}
+            placeholder="input code"
           />
         </div>
       </div>
