@@ -1,9 +1,10 @@
 import './Console.scss';
-import React from "react";
+import React, {Ref} from "react";
 import {subscribeEvent} from "@/utils/proxy";
 import NormalLog from "./log/NormalLog";
 import ErrorLog from "./errorLog/ErrorLog";
 import LogFilter from "@views/layout/mainModules/console/logFilter/LogFilter";
+import {isDef} from "@/utils";
 
 /**
  * @description 控制台奥做到两件事：1. 显示浏览器控制台的内容；2. 用户能够像控制台一样输入代码并且执行
@@ -64,6 +65,8 @@ export default class Console extends React.Component {
     isShowCodeInput: false;
   };
 
+  textareaDOM: Ref<HTMLTextAreaElement>;
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -71,9 +74,13 @@ export default class Console extends React.Component {
       consoleInput: '',
       consoleList: [],
       consoleListCache: [],
-      currentType: 'all'
+      currentType: 'all',
     };
+
+    this.textareaDOM = React.createRef();
+
     this.init();
+
     setTimeout(() => {
       console.log({
         map: new Map(),
@@ -161,6 +168,16 @@ export default class Console extends React.Component {
     window.removeEventListener('unhandledrejection', errorEventHandler);
   }
 
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any): void {
+    // @ts-ignore
+    let {current} = this.textareaDOM;
+
+    if (isDef(current)) {
+      // @ts-ignore
+      current.focus();
+    }
+  }
+
   execute = () => {
     // 执行代码
     let code = this.state.consoleInput;
@@ -172,7 +189,6 @@ export default class Console extends React.Component {
     try {
       // eslint-disable-next-line no-new-func
       let func = new Function(`return eval(\`${code}\`)`);
-      debugger
       result = func();
     } catch (e) {
       // 如果运行失败，那么添加失败项到控制台中
@@ -268,6 +284,7 @@ export default class Console extends React.Component {
           </div>
           <div className="console-input-main-container">
             <textarea
+              ref={this.textareaDOM}
               placeholder="Input JavaScript here"
               className="console-main"
               value={this.state.consoleInput}
