@@ -61,11 +61,13 @@ export default class Console extends React.Component {
     consoleInput: string;
     consoleListCache: ConsoleItem[];
     currentType: string;
+    isShowCodeInput: false;
   };
 
   constructor(props: any) {
     super(props);
     this.state = {
+      isShowCodeInput: false,
       consoleInput: '',
       consoleList: [],
       consoleListCache: [],
@@ -89,7 +91,7 @@ export default class Console extends React.Component {
         Null: null,
         array: [],
         object: {}
-      })
+      });
     }, 1000);
   }
 
@@ -159,24 +161,24 @@ export default class Console extends React.Component {
     window.removeEventListener('unhandledrejection', errorEventHandler);
   }
 
-  inputKeyDown = (event) => {
-    if (event.keyCode === 13) {
-      // 执行代码
-      let code = this.state.consoleInput;
-      this.setState({
-        consoleInput: ''
-      });
-      let result;
+  execute = () => {
+    // 执行代码
+    let code = this.state.consoleInput;
+    this.setState({
+      consoleInput: ''
+    });
+    let result;
 
-      try {
-        // eslint-disable-next-line no-eval
-        result = eval(`(${code})`);
-      } catch (e) {
-        // 如果运行失败，那么添加失败项到控制台中
-        console.error(e)
-      }
-      console.log(result)
+    try {
+      // eslint-disable-next-line no-new-func
+      let func = new Function(`return eval(\`${code}\`)`);
+      debugger
+      result = func();
+    } catch (e) {
+      // 如果运行失败，那么添加失败项到控制台中
+      console.error(e)
     }
+    console.log(result)
   }
 
   /**
@@ -250,15 +252,40 @@ export default class Console extends React.Component {
             })}
           </div>
         </div>
-        <div className="input-area">
+        {this.state.isShowCodeInput && <div className="console-input-layer">
+          <div className="console-input-control-container">
+            <span
+              onClick={() => {
+                this.setState({
+                  isShowCodeInput: false
+                });
+              }}>close</span>
+            <span
+              onClick={() => {
+                this.execute();
+              }}
+            >execute</span>
+          </div>
+          <div className="console-input-main-container">
+            <textarea
+              placeholder="Input JavaScript here"
+              className="console-main"
+              value={this.state.consoleInput}
+              onChange={this.inputChange}
+            />
+          </div>
+        </div>}
+        {!this.state.isShowCodeInput && <div className="input-area">
           <input
             className="console-input"
-            value={this.state.consoleInput}
-            onKeyDown={this.inputKeyDown}
-            onChange={this.inputChange}
-            placeholder="input code"
+            placeholder="Input JavaScript here"
+            onClick={() => {
+              this.setState({
+                isShowCodeInput: true
+              });
+            }}
           />
-        </div>
+        </div>}
       </div>
     );
   }
