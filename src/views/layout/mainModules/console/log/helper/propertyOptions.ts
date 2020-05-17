@@ -4,7 +4,7 @@
 
 export const baseOptions = ['__proto__'];
 
-export const arrayOptions = ['length'];
+export const arrayOptions = [];
 
 export const mapAndSetOptions = ['size'];
 

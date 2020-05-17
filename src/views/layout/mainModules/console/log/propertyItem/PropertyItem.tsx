@@ -13,7 +13,7 @@ const enumerableStyle = {
 };
 
 const unEnumerableStyle = {
-
+  opacity: .5
 };
 
 /**
@@ -57,7 +57,6 @@ function getPropertyComponentClassHOC(type: PropertyItemEnum) {
       if (this.state.isShowChild) {
         ({enumerableList, unEnumerableList} = getPropertyComponentList(value, indent + 1));
       }
-      console.table(unEnumerableList)
 
       return (
         <>

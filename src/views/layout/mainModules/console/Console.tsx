@@ -1,9 +1,10 @@
 import './Console.scss';
-import React from "react";
+import React, {Ref} from "react";
 import {subscribeEvent} from "@/utils/proxy";
 import NormalLog from "./log/NormalLog";
 import ErrorLog from "./errorLog/ErrorLog";
 import LogFilter from "@views/layout/mainModules/console/logFilter/LogFilter";
+import {isDef} from "@/utils";
 
 /**
  * @description 控制台奥做到两件事：1. 显示浏览器控制台的内容；2. 用户能够像控制台一样输入代码并且执行
@@ -61,17 +62,25 @@ export default class Console extends React.Component {
     consoleInput: string;
     consoleListCache: ConsoleItem[];
     currentType: string;
+    isShowCodeInput: false;
   };
+
+  textareaDOM: Ref<HTMLTextAreaElement>;
 
   constructor(props: any) {
     super(props);
     this.state = {
+      isShowCodeInput: false,
       consoleInput: '',
       consoleList: [],
       consoleListCache: [],
-      currentType: 'all'
+      currentType: 'all',
     };
+
+    this.textareaDOM = React.createRef();
+
     this.init();
+
     setTimeout(() => {
       console.log({
         map: new Map(),
@@ -89,7 +98,7 @@ export default class Console extends React.Component {
         Null: null,
         array: [],
         object: {}
-      })
+      });
     }, 1000);
   }
 
@@ -148,6 +157,8 @@ export default class Console extends React.Component {
         this.createConsoleFuncSubscribe(item, createAddConsoleItemOfTypeFn.call(this, item, mode));
       }
     }
+
+    // 进行注册捕获异常
     // window.addEventListener('error', errorEventHandler);
     // window.addEventListener('unhandledrejection', errorEventHandler);
   }
@@ -157,24 +168,33 @@ export default class Console extends React.Component {
     window.removeEventListener('unhandledrejection', errorEventHandler);
   }
 
-  inputKeyDown = (event) => {
-    if (event.keyCode === 13) {
-      // 执行代码
-      let code = this.state.consoleInput;
-      this.setState({
-        consoleInput: ''
-      });
-      let result;
+  componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<{}>, snapshot?: any): void {
+    // @ts-ignore
+    let {current} = this.textareaDOM;
 
-      try {
-        // eslint-disable-next-line no-eval
-        result = eval(`(${code})`);
-      } catch (e) {
-        // 如果运行失败，那么添加失败项到控制台中
-        console.log(e)
-      }
-      console.log(result)
+    if (isDef(current)) {
+      // @ts-ignore
+      current.focus();
     }
+  }
+
+  execute = () => {
+    // 执行代码
+    let code = this.state.consoleInput;
+    this.setState({
+      consoleInput: ''
+    });
+    let result;
+
+    try {
+      // eslint-disable-next-line no-new-func
+      let func = new Function(`return eval(\`${code}\`)`);
+      result = func();
+    } catch (e) {
+      // 如果运行失败，那么添加失败项到控制台中
+      console.error(e)
+    }
+    console.log(result)
   }
 
   /**
@@ -237,22 +257,52 @@ export default class Console extends React.Component {
           currentFilterType={this.state.currentType}
         />
         <div className="log-area">
-          {this.state.consoleList.map((item) => {
-            let Item = ComponentTypeMatch[item.type];
-            return (<Item
-              data={item.value}
-              id={item.id}
-              key={item.id}
-            />)
-          })}
+          <div className="log-scroll-container">
+            {this.state.consoleList.map((item) => {
+              let Item = ComponentTypeMatch[item.type];
+              return (<Item
+                data={item.value}
+                id={item.id}
+                key={item.id}
+              />)
+            })}
+          </div>
         </div>
-        <div className="input-area">
+        {this.state.isShowCodeInput && <div className="console-input-layer">
+          <div className="console-input-control-container">
+            <span
+              onClick={() => {
+                this.setState({
+                  isShowCodeInput: false
+                });
+              }}>close</span>
+            <span
+              onClick={() => {
+                this.execute();
+              }}
+            >execute</span>
+          </div>
+          <div className="console-input-main-container">
+            <textarea
+              ref={this.textareaDOM}
+              placeholder="Input JavaScript here"
+              className="console-main"
+              value={this.state.consoleInput}
+              onChange={this.inputChange}
+            />
+          </div>
+        </div>}
+        {!this.state.isShowCodeInput && <div className="input-area">
           <input
-            value={this.state.consoleInput}
-            onKeyDown={this.inputKeyDown}
-            onChange={this.inputChange}
+            className="console-input"
+            placeholder="Input JavaScript here"
+            onClick={() => {
+              this.setState({
+                isShowCodeInput: true
+              });
+            }}
           />
-        </div>
+        </div>}
       </div>
     );
   }
